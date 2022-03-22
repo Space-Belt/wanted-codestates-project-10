@@ -2,18 +2,16 @@ import React, { useRef, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styled from 'styled-components';
 import { useMediaQuery } from 'react-responsive';
+import { useDispatch } from 'react-redux';
+import { searchWord } from 'store/search';
 
 function Search() {
-  // const [inputChange, setInputChange] = useState(false);
-  // const inputRef = useRef();
+  const dispatch = useDispatch();
+  const inputRef = useRef();
   const responsiveWeb = useMediaQuery({ query: '(min-width: 1040px)' });
-  // const handleOnChange = () => {
-  //   if (inputRef.current.value) {
-  //     setInputChange(true);
-  //   } else if (!inputRef.current.value) {
-  //     setInputChange(false);
-  //   }
-  // };
+  const handleChange = () => {
+    dispatch(searchWord(inputRef.current.value));
+  };
 
   return (
     <Container responsiveWeb={responsiveWeb}>
@@ -21,12 +19,12 @@ function Search() {
         국내 모든 임상시험 검색하고 <br /> 온라인으로 참여하기
       </TextContents>
       <SearchWrapper>
-        <SearchBox>
+        <SearchBox responsiveWeb={responsiveWeb}>
           {responsiveWeb && <BiSearch />}
-          <DiseaseInput type="text" placeholder="질환명을 입력해 주세요" />
+          <DiseaseInput type="text" ref={inputRef} responsiveWeb={responsiveWeb} placeholder="질환명을 입력해 주세요" onChange={handleChange} onKeyDown={handleChange} />
           {!responsiveWeb && <BiSearch />}
         </SearchBox>
-        <SearchBtn>검색</SearchBtn>
+        {responsiveWeb && <SearchBtn>검색</SearchBtn>}
       </SearchWrapper>
     </Container>
   );
@@ -65,28 +63,24 @@ const SearchWrapper = styled.div`
 
 const SearchBox = styled.div`
   display: flex;
-  padding-left: 24px;
-  padding-right: 24px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: ${({ responsiveWeb }) => (responsiveWeb ? '20px 24px' : '12px 20px')};
+  box-shadow: ${({ responsiveWeb }) => (responsiveWeb ? '' : '0px 2px 2px rgb(30 32 37 / 10%)')};
+  border-radius: 50px;
   font-weight: 400;
   letter-spacing: -0.018em;
   line-height: 1.6;
   align-items: center;
-  font-size: 1.125rem;
   -webkit-box-align: center;
   flex: 1;
   flex-direction: row;
   & svg {
-    width: 16;
-    height: 16;
     color: black;
-    margin-right: 15px;
+    margin-right: ${({ responsiveWeb }) => (responsiveWeb ? '15px' : '5px')};
   }
 `;
 
 const DiseaseInput = styled.input`
-  font-size: 1.125rem;
+  font-size: ${({ responsiveWeb }) => (responsiveWeb ? '1.125rem' : '0.875rem')};
   border: 0;
   background-color: transparent;
   min-width: 0;

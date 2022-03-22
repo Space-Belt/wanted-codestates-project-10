@@ -1,4 +1,5 @@
 import Search from 'components/Search';
+import SearchList from 'components/SearchList';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -6,6 +7,7 @@ function Main() {
   return (
     <Container>
       <Search />
+      <SearchList />
     </Container>
   );
 }
