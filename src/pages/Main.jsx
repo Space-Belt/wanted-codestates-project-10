@@ -1,17 +1,25 @@
+import Search from 'components/Search';
 import React from 'react';
 import styled from 'styled-components';
 
 function Main() {
-  return <Container>Main</Container>;
+  return (
+    <Container>
+      <Search />
+    </Container>
+  );
 }
 
 const Container = styled.div`
-  width: 100%;
-  height: 100%;
-  border: 1px solid black;
-  display: flex;
-  justify-content: center;
+  background-color: #cae9ff;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  /* justify-content: space-between; */
   align-items: center;
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 80px;
 `;
 
 export default Main;
