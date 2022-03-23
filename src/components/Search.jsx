@@ -4,13 +4,16 @@ import styled from 'styled-components';
 import { useMediaQuery } from 'react-responsive';
 import { useDispatch } from 'react-redux';
 import { searchWord } from 'store/search';
+import axios from 'axios';
 
 function Search() {
   const dispatch = useDispatch();
   const inputRef = useRef();
   const responsiveWeb = useMediaQuery({ query: '(min-width: 1040px)' });
-  const handleChange = () => {
-    dispatch(searchWord(inputRef.current.value));
+  const handleChange = async () => {
+    // const value = JSON.stringify(inputRef.current.value);
+    const { data } = await axios.get(`https://api.clinicaltrialskorea.com/api/v1/search-conditions/?name=${inputRef.current.value}`).catch((err) => console.log(err));
+    dispatch(searchWord(data));
   };
 
   return (
@@ -21,7 +24,7 @@ function Search() {
       <SearchWrapper>
         <SearchBox responsiveWeb={responsiveWeb}>
           {responsiveWeb && <BiSearch />}
-          <DiseaseInput type="text" ref={inputRef} responsiveWeb={responsiveWeb} placeholder="질환명을 입력해 주세요" onChange={handleChange} onKeyDown={handleChange} />
+          <DiseaseInput type="text" ref={inputRef} responsiveWeb={responsiveWeb} placeholder="질환명을 입력해 주세요" onChange={handleChange} />
           {!responsiveWeb && <BiSearch />}
         </SearchBox>
         {responsiveWeb && <SearchBtn>검색</SearchBtn>}
@@ -74,6 +77,8 @@ const SearchBox = styled.div`
   flex: 1;
   flex-direction: row;
   & svg {
+    width: 20px;
+    height: 20px;
     color: black;
     margin-right: ${({ responsiveWeb }) => (responsiveWeb ? '15px' : '5px')};
   }
