@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import styled from 'styled-components';
@@ -78,10 +78,15 @@ const Disease = styled.li`
   width: 100%;
   font-size: 18px;
   cursor: pointer;
+  :hover {
+    background-color: #efefef;
+    border-radius: 20px;
+  }
   svg {
     width: 20px;
     height: 20px;
     margin-right: 10px;
+    margin-left: 10px;
   }
   p {
     display: inline-block;

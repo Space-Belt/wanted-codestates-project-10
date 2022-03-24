@@ -1,7 +1,6 @@
 const SEARCH_WORD = 'search/SEARCH_WORD';
 const CLICKED_WORD = 'search/CLICKED_WORD';
 const CHECK_DATA = 'search/CHECK_DATA';
-const NO_SEARCHWORD = 'search/NO_SEARCHWORD';
 
 const initialState = {
   searchDisease: [],
