@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styled from 'styled-components';
 import { useMediaQuery } from 'react-responsive';
@@ -51,33 +51,6 @@ function Search() {
       }
     }
   };
-
-  // const pageMove = () => {
-  //   window.location.href(`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`);
-  // };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log(e);
-  //   if (e.key === 'Enter') {
-  //     dispatch(clickedWord(datas[listIdx].name));
-  //     if (clickedDisease === inputRef.current.value) {
-  //       window.open(`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`);
-  //     }
-  //   }
-  // };
-
-  // const searchStart = (e) => {
-  //   console.log(inputRef.current.value);
-  //   console.log(clickedDisease);
-
-  //   if (e.key === 'Enter' && clickedDisease === inputRef.current.value) {
-  //     window.open(`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`);
-  //   }
-  // };
-  // useEffect(() => {
-  //   window.addEventListener('keydown', searchStart);
-  // }, []);
 
   return (
     <Container responsiveWeb={responsiveWeb}>
