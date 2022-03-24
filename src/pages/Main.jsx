@@ -16,7 +16,6 @@ const Container = styled.div`
   background-color: #cae9ff;
   flex-direction: column;
   -webkit-box-pack: justify;
-  /* justify-content: space-between; */
   align-items: center;
   display: flex;
   width: 100%;

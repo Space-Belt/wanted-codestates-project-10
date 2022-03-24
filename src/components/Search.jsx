@@ -1,14 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styled from 'styled-components';
 import { useMediaQuery } from 'react-responsive';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkData, clickedWord, searchWord } from 'store/search';
+import { checkData, clickedWord, idxControl, searchWord } from 'store/search';
 import axios from 'axios';
 
 function Search() {
+  const listIdx = useSelector((state) => state.search.diseaseIdx);
+  const enterKey = document.querySelector('.goFind');
   const dispatch = useDispatch();
   const clickedDisease = useSelector((state) => state.search.clicked);
+  const datas = useSelector((state) => state.search.searchDisease);
   const inputRef = useRef();
   const responsiveWeb = useMediaQuery({ query: '(min-width: 1040px)' });
   const handleChange = async () => {
@@ -16,12 +19,65 @@ function Search() {
     if (inputRef.current.value.length > 0) {
       const { data } = await axios.get(`https://api.clinicaltrialskorea.com/api/v1/search-conditions/?name=${inputRef.current.value}`).catch((err) => console.log(err));
       dispatch(checkData(inputRef.current.value.length));
-      dispatch(searchWord(data));
+      dispatch(searchWord(data.splice(0, 7)));
     } else {
       dispatch(searchWord([]));
       dispatch(checkData(inputRef.current.value.length));
     }
   };
+
+  const handleKeyDown = (e) => {
+    if (e.nativeEvent.isComposing === false && e.key === 'ArrowDown') {
+      if (listIdx < datas.length - 1) {
+        dispatch(idxControl(listIdx + 1));
+        return;
+      }
+    }
+    if (e.key === 'ArrowUp') {
+      if (listIdx > 0) {
+        dispatch(idxControl(listIdx - 1));
+        return;
+      }
+    }
+    if (e.key === 'Enter') {
+      if (listIdx > -1) {
+        dispatch(clickedWord(datas[listIdx].name));
+      } else {
+        enterKey.click();
+        return;
+      }
+      if (clickedDisease === datas[listIdx].name) {
+        enterKey.click();
+      }
+    }
+  };
+
+  // const pageMove = () => {
+  //   window.location.href(`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`);
+  // };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log(e);
+  //   if (e.key === 'Enter') {
+  //     dispatch(clickedWord(datas[listIdx].name));
+  //     if (clickedDisease === inputRef.current.value) {
+  //       window.open(`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`);
+  //     }
+  //   }
+  // };
+
+  // const searchStart = (e) => {
+  //   console.log(inputRef.current.value);
+  //   console.log(clickedDisease);
+
+  //   if (e.key === 'Enter' && clickedDisease === inputRef.current.value) {
+  //     window.open(`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`);
+  //   }
+  // };
+  // useEffect(() => {
+  //   window.addEventListener('keydown', searchStart);
+  // }, []);
 
   return (
     <Container responsiveWeb={responsiveWeb}>
@@ -31,10 +87,14 @@ function Search() {
       <SearchWrapper>
         <SearchBox responsiveWeb={responsiveWeb}>
           {responsiveWeb && <BiSearch />}
-          <DiseaseInput type="text" ref={inputRef} responsiveWeb={responsiveWeb} placeholder="질환명을 입력해 주세요" value={clickedDisease} onChange={handleChange} />
+          <DiseaseInput type="text" ref={inputRef} responsiveWeb={responsiveWeb} placeholder="질환명을 입력해 주세요" value={clickedDisease} onChange={handleChange} onKeyDown={handleKeyDown} />
           {!responsiveWeb && <BiSearch />}
         </SearchBox>
-        {responsiveWeb && <SearchBtn href={`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`}>검색</SearchBtn>}
+        {responsiveWeb && (
+          <SearchBtn className="goFind" href={`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`}>
+            검색
+          </SearchBtn>
+        )}
       </SearchWrapper>
     </Container>
   );
@@ -83,6 +143,7 @@ const SearchBox = styled.div`
   -webkit-box-align: center;
   flex: 1;
   flex-direction: row;
+
   & svg {
     width: 20px;
     height: 20px;

@@ -1,19 +1,29 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
 import styled from 'styled-components';
 import { BiSearch } from 'react-icons/bi';
-import { clickedWord } from 'store/search';
+import { clickedWord, idxControl } from 'store/search';
 
 function SearchList() {
   const dispatch = useDispatch();
+  const diseaseRef = useRef();
+  const listIdx = useSelector((state) => state.search.diseaseIdx);
   const checking = useSelector((state) => state.search.searchWordCheck);
-
   const datas = useSelector((state) => state.search.searchDisease);
   const responsiveWeb = useMediaQuery({ query: '(min-width: 1040px)' });
 
   const handleOnClick = (name) => {
     dispatch(clickedWord(name));
+  };
+
+  const handleMouseOver = (e) => {
+    dispatch(idxControl(e));
+  };
+
+  const handleEnter = (e, idx) => {
+    console.log(e);
+    console.log(idx);
   };
 
   return (
@@ -22,9 +32,16 @@ function SearchList() {
         <RecommendBox responsiveWeb={responsiveWeb}>
           <RecommendWord>추천검색어</RecommendWord>
           <Diseases>
-            {datas.length > 0 &&
-              datas.map((data) => (
-                <Disease key={data.id} onClick={() => handleOnClick(data.name)}>
+            {listIdx !== null &&
+              datas.map((data, index) => (
+                <Disease
+                  className={index === listIdx ? 'active' : ''}
+                  ref={diseaseRef}
+                  key={data.id}
+                  onClick={() => handleOnClick(data.name)}
+                  onMouseOver={(e) => handleMouseOver(index)}
+                  onKeyDown={(e) => handleEnter(e, index)}
+                >
                   <BiSearch /> <p>{data.name}</p>
                 </Disease>
               ))}
@@ -47,13 +64,7 @@ const RecommendBox = styled.div`
   margin-top: 7px;
   border-radius: 20px;
   background-color: #fff;
-  /* display: flex;
-  flex-direction: column;
-  align-items: center; */
   padding: 30px;
-  overflow: scroll;
-  .noResult {
-  }
 `;
 
 const RecommendWord = styled.span`
@@ -64,6 +75,7 @@ const RecommendWord = styled.span`
 const Diseases = styled.ul`
   display: flex;
   flex-direction: column;
+  flex: 1;
   margin-top: 5px;
   width: 100%;
   overflow: scroll;
@@ -91,6 +103,10 @@ const Disease = styled.li`
   p {
     display: inline-block;
     margin-top: 2px;
+  }
+  &.active {
+    background-color: #efefef;
+    border-radius: 20px;
   }
 `;
 
