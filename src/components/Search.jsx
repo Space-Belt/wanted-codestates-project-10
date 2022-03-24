@@ -2,18 +2,25 @@ import React, { useRef } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styled from 'styled-components';
 import { useMediaQuery } from 'react-responsive';
-import { useDispatch } from 'react-redux';
-import { searchWord } from 'store/search';
+import { useDispatch, useSelector } from 'react-redux';
+import { checkData, clickedWord, searchWord } from 'store/search';
 import axios from 'axios';
 
 function Search() {
   const dispatch = useDispatch();
+  const clickedDisease = useSelector((state) => state.search.clicked);
   const inputRef = useRef();
   const responsiveWeb = useMediaQuery({ query: '(min-width: 1040px)' });
   const handleChange = async () => {
-    // const value = JSON.stringify(inputRef.current.value);
-    const { data } = await axios.get(`https://api.clinicaltrialskorea.com/api/v1/search-conditions/?name=${inputRef.current.value}`).catch((err) => console.log(err));
-    dispatch(searchWord(data));
+    dispatch(clickedWord(inputRef.current.value));
+    if (inputRef.current.value.length > 0) {
+      const { data } = await axios.get(`https://api.clinicaltrialskorea.com/api/v1/search-conditions/?name=${inputRef.current.value}`).catch((err) => console.log(err));
+      dispatch(checkData(inputRef.current.value.length));
+      dispatch(searchWord(data));
+    } else {
+      dispatch(searchWord([]));
+      dispatch(checkData(inputRef.current.value.length));
+    }
   };
 
   return (
@@ -24,10 +31,10 @@ function Search() {
       <SearchWrapper>
         <SearchBox responsiveWeb={responsiveWeb}>
           {responsiveWeb && <BiSearch />}
-          <DiseaseInput type="text" ref={inputRef} responsiveWeb={responsiveWeb} placeholder="질환명을 입력해 주세요" onChange={handleChange} />
+          <DiseaseInput type="text" ref={inputRef} responsiveWeb={responsiveWeb} placeholder="질환명을 입력해 주세요" value={clickedDisease} onChange={handleChange} />
           {!responsiveWeb && <BiSearch />}
         </SearchBox>
-        {responsiveWeb && <SearchBtn>검색</SearchBtn>}
+        {responsiveWeb && <SearchBtn href={`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`}>검색</SearchBtn>}
       </SearchWrapper>
     </Container>
   );
@@ -97,7 +104,7 @@ const DiseaseInput = styled.input`
   }
 `;
 
-const SearchBtn = styled.button`
+const SearchBtn = styled.a`
   border-width: 0;
   border-top-right-radius: 42px;
   border-bottom-right-radius: 42px;
