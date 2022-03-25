@@ -21,11 +21,6 @@ function SearchList() {
     dispatch(idxControl(e));
   };
 
-  const handleEnter = (e, idx) => {
-    console.log(e);
-    console.log(idx);
-  };
-
   return (
     <>
       {datas.length > 0 ? (
@@ -34,14 +29,7 @@ function SearchList() {
           <Diseases>
             {listIdx !== null &&
               datas.map((data, index) => (
-                <Disease
-                  className={index === listIdx ? 'active' : ''}
-                  ref={diseaseRef}
-                  key={data.id}
-                  onClick={() => handleOnClick(data.name)}
-                  onMouseOver={(e) => handleMouseOver(index)}
-                  onKeyDown={(e) => handleEnter(e, index)}
-                >
+                <Disease className={index === listIdx ? 'active' : ''} ref={diseaseRef} key={data.id} onClick={() => handleOnClick(data.name)} onMouseOver={(e) => handleMouseOver(index)}>
                   <BiSearch /> <p>{data.name}</p>
                 </Disease>
               ))}
