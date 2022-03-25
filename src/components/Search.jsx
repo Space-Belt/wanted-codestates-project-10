@@ -5,6 +5,7 @@ import { useMediaQuery } from 'react-responsive';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkData, clickedWord, idxControl, searchWord } from 'store/search';
 import axios from 'axios';
+import { debounce } from 'lodash';
 
 function Search() {
   const listIdx = useSelector((state) => state.search.diseaseIdx);
@@ -14,12 +15,18 @@ function Search() {
   const datas = useSelector((state) => state.search.searchDisease);
   const inputRef = useRef();
   const responsiveWeb = useMediaQuery({ query: '(min-width: 1040px)' });
+
+  const handleDebounce = debounce(async () => {
+    const { data } = await axios.get(`https://api.clinicaltrialskorea.com/api/v1/search-conditions/?name=${inputRef.current.value}`).catch((err) => console.log(err));
+    dispatch(checkData(inputRef.current.value.length));
+    dispatch(searchWord(data.splice(0, 7)));
+    return;
+  }, 500);
+
   const handleChange = async () => {
     dispatch(clickedWord(inputRef.current.value));
     if (inputRef.current.value.length > 0) {
-      const { data } = await axios.get(`https://api.clinicaltrialskorea.com/api/v1/search-conditions/?name=${inputRef.current.value}`).catch((err) => console.log(err));
-      dispatch(checkData(inputRef.current.value.length));
-      dispatch(searchWord(data.splice(0, 7)));
+      handleDebounce();
     } else {
       dispatch(searchWord([]));
       dispatch(checkData(inputRef.current.value.length));
