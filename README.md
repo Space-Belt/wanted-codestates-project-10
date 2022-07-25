@@ -2,7 +2,7 @@
 
 ![최종](https://user-images.githubusercontent.com/82592845/160156765-5db12469-32dd-4689-8912-d46f3bf263ae.gif)
 
-### [😃배포주소](https://dynamic-sunburst-77084d.netlify.app)
+### [☻배포주소](https://dynamic-sunburst-77084d.netlify.app)
 
 ---
 
