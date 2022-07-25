@@ -32,9 +32,16 @@
 
 ```jsx
 const handleDebounce = debounce(async () => {
-  const { data } = await axios.get(`https://api.clinicaltrialskorea.com/api/v1/search-conditions/?name=${inputRef.current.value}`).catch((err) => console.log(err));
+  axios
+    .get(`${PROXY}/api/v1/search-conditions/?name=${inputRef.current.value}`)
+    .then((res) => res.data)
+    .then((data) => {
+      dispatch(searchWord(data.splice(0, 7)));
+    })
+    .catch((err) => console.error(err));
+
   dispatch(checkData(inputRef.current.value.length));
-  dispatch(searchWord(data.splice(0, 7)));
+
   return;
 }, 500);
 
