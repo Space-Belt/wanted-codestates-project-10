@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkData, clickedWord, idxControl, searchWord } from 'store/search';
 import axios from 'axios';
 import { debounce } from 'lodash';
+import { PROXY } from 'utils/Utils';
 
 function Search() {
   const listIdx = useSelector((state) => state.search.diseaseIdx);
   const enterKey = document.querySelector('.goFind');
+  const secondEnter = document.querySelector('.hideFind');
   const dispatch = useDispatch();
   const clickedDisease = useSelector((state) => state.search.clicked);
   const datas = useSelector((state) => state.search.searchDisease);
@@ -17,9 +19,16 @@ function Search() {
   const responsiveWeb = useMediaQuery({ query: '(min-width: 1040px)' });
 
   const handleDebounce = debounce(async () => {
-    const { data } = await axios.get(`https://api.clinicaltrialskorea.com/api/v1/search-conditions/?name=${inputRef.current.value}`).catch((err) => console.log(err));
+    axios
+      .get(`${PROXY}/api/v1/search-conditions/?name=${inputRef.current.value}`)
+      .then((res) => res.data)
+      .then((data) => {
+        dispatch(searchWord(data.splice(0, 7)));
+      })
+      .catch((err) => console.error(err));
+
     dispatch(checkData(inputRef.current.value.length));
-    dispatch(searchWord(data.splice(0, 7)));
+
     return;
   }, 500);
 
@@ -51,10 +60,12 @@ function Search() {
         dispatch(clickedWord(datas[listIdx].name));
       } else {
         enterKey.click();
+        secondEnter.click();
         return;
       }
       if (clickedDisease === datas[listIdx].name) {
         enterKey.click();
+        secondEnter.click();
       }
     }
   };
@@ -68,10 +79,19 @@ function Search() {
         <SearchBox responsiveWeb={responsiveWeb}>
           {responsiveWeb && <BiSearch />}
           <DiseaseInput type="text" ref={inputRef} responsiveWeb={responsiveWeb} placeholder="질환명을 입력해 주세요" value={clickedDisease} onChange={handleChange} onKeyDown={handleKeyDown} />
-          {!responsiveWeb && <BiSearch />}
+          {!responsiveWeb && (
+            <button className="goFind" href={`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`}>
+              <BiSearch />
+            </button>
+          )}
         </SearchBox>
         {responsiveWeb && (
           <SearchBtn className="goFind" href={`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`}>
+            검색
+          </SearchBtn>
+        )}
+        {!responsiveWeb && (
+          <SearchBtn className="hideFind" href={`https://clinicaltrialskorea.com/studies?condition=${clickedDisease}`}>
             검색
           </SearchBtn>
         )}
@@ -160,6 +180,9 @@ const SearchBtn = styled.a`
   padding-top: 18px;
   padding-bottom: 18px;
   cursor: pointer;
+  &.hideFind {
+    display: none;
+  }
 `;
 
 export default Search;
